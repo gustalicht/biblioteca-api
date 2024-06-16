@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const loanController = require('../controllers/loanController');
+const loanController = require('../controllers/emprestimosController');
 const auth = require('../middleware/auth');
 
 router.get('/', auth, loanController.getAllLoans);

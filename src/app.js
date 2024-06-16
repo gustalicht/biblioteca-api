@@ -1,9 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const authorRoutes = require('./routes/authorRoutes');
-const bookRoutes = require('./routes/bookRoutes');
-const clientRoutes = require('./routes/clientRoutes');
-const loanRoutes = require('./routes/loanRoutes');
+const authorRoutes = require('./routes/autorRoutes');
+const bookRoutes = require('./routes/livroRoutes');
+const clientRoutes = require('./routes/clienteRoutes');
+const loanRoutes = require('./routes/emprestimoRoutes');
 const jwt = require('jsonwebtoken');
 
 const app = express();
