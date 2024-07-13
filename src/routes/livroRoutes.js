@@ -63,6 +63,8 @@ const auth = require('../middleware/auth');
  *   get:
  *     summary: Retorna todos os livros
  *     tags: [Livros]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de livros
@@ -80,6 +82,8 @@ router.get('/', auth, bookController.getAllBooks);
  *   get:
  *     summary: Retorna um livro pelo ID
  *     tags: [Livros]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -104,6 +108,8 @@ router.get('/:id', auth, bookController.getBookById);
  *   post:
  *     summary: Cria um novo livro
  *     tags: [Livros]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -127,6 +133,8 @@ router.post('/', auth, bookController.createBook);
  *   put:
  *     summary: Atualiza um livro pelo ID
  *     tags: [Livros]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -159,6 +167,8 @@ router.put('/:id', auth, bookController.updateBook);
  *   delete:
  *     summary: Deleta um livro pelo ID
  *     tags: [Livros]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id

@@ -7,7 +7,7 @@ const auth = require('../middleware/auth');
  * @swagger
  * components:
  *   schemas:
- *     Author:
+ *     Autor:
  *       type: object
  *       required:
  *         - nome
@@ -32,7 +32,7 @@ const auth = require('../middleware/auth');
  * @swagger
  * tags:
  *   name: autores
- *   description: API para gerenciar autores
+ *   descrição: API para gerenciar autores
  */
 
 /**
@@ -41,6 +41,8 @@ const auth = require('../middleware/auth');
  *   get:
  *     summary: Retorna todos os autores
  *     tags: [autores]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de autores
@@ -49,9 +51,8 @@ const auth = require('../middleware/auth');
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Author'
+ *                 $ref: '#/components/schemas/Autor'
  */
-
 router.get('/', auth, authorController.getAllAuthors);
 /**
  * @swagger
@@ -59,6 +60,8 @@ router.get('/', auth, authorController.getAllAuthors);
  *   get:
  *     summary: Retorna um autor pelo ID
  *     tags: [autores]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -84,6 +87,8 @@ router.get('/:id', auth, authorController.getAuthorById);
  *   post:
  *     summary: Cria um novo autor
  *     tags: [autores]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -107,6 +112,8 @@ router.post('/', auth, authorController.createAuthor);
  *   put:
  *     summary: Atualiza um autor pelo ID
  *     tags: [autores]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -140,6 +147,8 @@ router.put('/:id', auth, authorController.updateAuthor);
  *   delete:
  *     summary: Deleta um autor pelo ID
  *     tags: [autores]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id

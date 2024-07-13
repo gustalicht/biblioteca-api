@@ -55,6 +55,8 @@ const auth = require('../middleware/auth');
  *   get:
  *     summary: Retorna todos os empréstimos
  *     tags: [Empréstimos]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de empréstimos
@@ -73,6 +75,8 @@ router.get('/', auth, loanController.getAllLoans);
  *   post:
  *     summary: Cria um novo empréstimo
  *     tags: [Empréstimos]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -96,6 +100,8 @@ router.post('/', auth, loanController.createLoan);
  *   post:
  *     summary: Devolve um livro emprestado
  *     tags: [Empréstimos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id

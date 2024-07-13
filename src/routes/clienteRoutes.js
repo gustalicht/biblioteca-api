@@ -45,6 +45,8 @@ const auth = require('../middleware/auth');
  *   get:
  *     summary: Retorna todos os clientes
  *     tags: [Clientes]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de clientes
@@ -62,6 +64,8 @@ router.get('/', auth, clientController.getAllClients);
  *   get:
  *     summary: Retorna um cliente pelo ID
  *     tags: [Clientes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -87,6 +91,8 @@ router.get('/:id', auth, clientController.getClientById);
  *   post:
  *     summary: Cria um novo cliente
  *     tags: [Clientes]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -110,6 +116,8 @@ router.post('/', auth, clientController.createClient);
  *   put:
  *     summary: Atualiza um cliente pelo ID
  *     tags: [Clientes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -142,6 +150,8 @@ router.put('/:id', auth, clientController.updateClient);
  *   delete:
  *     summary: Deleta um cliente pelo ID
  *     tags: [Clientes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
