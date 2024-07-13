@@ -31,16 +31,16 @@ const auth = require('../middleware/auth');
 /**
  * @swagger
  * tags:
- *   name: Authors
+ *   name: autores
  *   description: API para gerenciar autores
  */
 
 /**
  * @swagger
- * /authors:
+ * /autores:
  *   get:
  *     summary: Retorna todos os autores
- *     tags: [Authors]
+ *     tags: [autores]
  *     responses:
  *       200:
  *         description: Lista de autores
@@ -55,10 +55,10 @@ const auth = require('../middleware/auth');
 router.get('/', auth, authorController.getAllAuthors);
 /**
  * @swagger
- * /authors/{id}:
+ * /autores/{id}:
  *   get:
  *     summary: Retorna um autor pelo ID
- *     tags: [Authors]
+ *     tags: [autores]
  *     parameters:
  *       - in: path
  *         name: id
@@ -80,10 +80,10 @@ router.get('/', auth, authorController.getAllAuthors);
 router.get('/:id', auth, authorController.getAuthorById);
 /**
  * @swagger
- * /authors:
+ * /autores:
  *   post:
  *     summary: Cria um novo autor
- *     tags: [Authors]
+ *     tags: [autores]
  *     requestBody:
  *       required: true
  *       content:
@@ -103,10 +103,10 @@ router.get('/:id', auth, authorController.getAuthorById);
 router.post('/', auth, authorController.createAuthor);
 /**
  * @swagger
- * /authors/{id}:
+ * /autores/{id}:
  *   put:
  *     summary: Atualiza um autor pelo ID
- *     tags: [Authors]
+ *     tags: [autores]
  *     parameters:
  *       - in: path
  *         name: id
@@ -136,10 +136,10 @@ router.put('/:id', auth, authorController.updateAuthor);
 
 /**
  * @swagger
- * /authors/{id}:
+ * /autores/{id}:
  *   delete:
  *     summary: Deleta um autor pelo ID
- *     tags: [Authors]
+ *     tags: [autores]
  *     parameters:
  *       - in: path
  *         name: id
