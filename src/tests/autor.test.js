@@ -1,13 +1,13 @@
 const request = require('supertest');
-const app = require('../src/app');
-const authors = require('../src/models/author');
+const app = require('../app');
+const authors = require('../models/autor');
 
 beforeEach(() => {
   authors.length = 0;
-  authors.push({ id: 1, name: 'Author 1', country: 'Country 1' });
+  authors.push({ id: 1, nome: 'Author 1', pais: 'pais 1' });
 });
 
-describe('Author API', () => {
+describe('Autor API', () => {
   let token;
 
   beforeAll(async () => {
@@ -15,38 +15,38 @@ describe('Author API', () => {
     token = response.body.token;
   });
 
-  test('GET /authors - should return all authors', async () => {
+  test('GET /autores - Deve retornar todos os autores', async () => {
     const response = await request(app)
-      .get('/authors')
+      .get('/autores')
       .set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(200);
     expect(response.body.length).toBe(1);
   });
 
-  test('POST /authors - should create a new author', async () => {
-    const newAuthor = { name: 'Author 2', country: 'Country 2' };
+  test('POST /autores - retornar o autor que foi criado', async () => {
+    const newAuthor = { nome: 'Author 2', pais: 'pais 2' };
     const response = await request(app)
-      .post('/authors')
+      .post('/autores')
       .set('Authorization', `Bearer ${token}`)
       .send(newAuthor);
     expect(response.status).toBe(201);
-    expect(response.body.name).toBe(newAuthor.name);
+    expect(response.body.nome).toBe(newAuthor.nome);
     expect(authors.length).toBe(2);
   });
 
-  test('PUT /authors/:id - should update an author', async () => {
-    const updatedAuthor = { name: 'Updated Author 1', country: 'Updated Country 1' };
+  test('PUT /autores/:id - retornar o autor que foi atualizado', async () => {
+    const updatedAuthor = { nome: 'Updated Author 1', pais: 'Updated pais 1' };
     const response = await request(app)
-      .put('/authors/1')
+      .put('/autores/1')
       .set('Authorization', `Bearer ${token}`)
       .send(updatedAuthor);
     expect(response.status).toBe(200);
-    expect(response.body.name).toBe(updatedAuthor.name);
+    expect(response.body.nome).toBe(updatedAuthor.nome);
   });
 
-  test('DELETE /authors/:id - should delete an author', async () => {
+  test('DELETE /autores/:id - não deve retornar nada e apenas mostrar o status', async () => {
     const response = await request(app)
-      .delete('/authors/1')
+      .delete('/autores/1')
       .set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(204);
     expect(authors.length).toBe(0);

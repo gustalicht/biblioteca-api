@@ -2,9 +2,9 @@
   "name": "biblioteca-api",
   "version": "1.0.0",
   "description": "Projeto de estudos da Biblioteca - API, feita em Javascript e node.js",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "nodemon src/server.js"
   },
   "keywords": [],
