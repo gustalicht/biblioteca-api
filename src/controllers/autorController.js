@@ -1,45 +1,65 @@
-const authors = require('../models/autor');
+const autores = require('../models/autor');
 
 exports.getAllAuthors = (req, res) => {
-  res.status(200).json(authors);
+  try {
+    res.status(200).json(autores);
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao buscar autores' });
+  }
 };
 
 exports.getAuthorById = (req, res) => {
-  const author = authors.find(a => a.id === parseInt(req.params.id));
-  if (author) {
-    res.status(200).json(author);
-  } else {
-    res.status(404).json({ message: 'Author not found' });
+  try {
+    const autor = autores.find(a => a.id === parseInt(req.params.id));
+    if (autor) {
+      res.status(200).json(autor);
+    } else {
+      res.status(404).json({ message: 'Autor não encontrado' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao buscar autor' });
   }
 };
 
 exports.createAuthor = (req, res) => {
-  const author = {
-    id: authors.length + 1,
-    name: req.body.name,
-    country: req.body.country
-  };
-  authors.push(author);
-  res.status(201).json(author);
+  try {
+    const autor = {
+      id: autores.length + 1,
+      nome: req.body.nome,
+      pais: req.body.pais
+    };
+    autores.push(autor);
+    res.status(201).json(autor);
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao criar autor' });
+  }
 };
 
 exports.updateAuthor = (req, res) => {
-  const author = authors.find(a => a.id === parseInt(req.params.id));
-  if (author) {
-    author.name = req.body.name || author.name;
-    author.country = req.body.country || author.country;
-    res.status(200).json(author);
-  } else {
-    res.status(404).json({ message: 'Author not found' });
+  try {
+    const autor = autores.find(a => a.id === parseInt(req.params.id));
+    if (autor) {
+      autor.nome = req.body.nome || autor.nome;
+      autor.pais = req.body.pais || autor.pais;
+      res.status(200).json(autor);
+    } else {
+      res.status(404).json({ message: 'Autor não encontrado' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao atualizar autor' });
   }
 };
 
 exports.deleteAuthor = (req, res) => {
-  const index = authors.findIndex(a => a.id === parseInt(req.params.id));
-  if (index !== -1) {
-    authors.splice(index, 1);
-    res.status(204).send();
-  } else {
-    res.status(404).json({ message: 'Author not found' });
+  try {
+    const index = autores.findIndex(a => a.id === parseInt(req.params.id));
+    if (index !== -1) {
+      autores.splice(index, 1);
+      res.status(204).send();
+    } else {
+      res.status(404).json({ message: 'Autor não encontrado' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao deletar autor' });
   }
 };

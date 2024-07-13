@@ -5,14 +5,16 @@ const bookRoutes = require('./routes/livroRoutes');
 const clientRoutes = require('./routes/clienteRoutes');
 const loanRoutes = require('./routes/emprestimoRoutes');
 const jwt = require('jsonwebtoken');
+const setupSwagger = require('./swagger');
 
 const app = express();
 
 app.use(bodyParser.json());
-app.use('/authors', authorRoutes);
-app.use('/books', bookRoutes);
-app.use('/clients', clientRoutes);
-app.use('/loans', loanRoutes);
+setupSwagger(app);
+app.use('/autores', authorRoutes);
+app.use('/livros', bookRoutes);
+app.use('/clientes', clientRoutes);
+app.use('/emprestimos', loanRoutes);
 
 app.post('/login', (req, res) => {
   const token = jwt.sign({ id: 1, username: 'user' }, 'secret');
