@@ -9,3 +9,6 @@ const generateToken = (userId) => {
 // Exemplo de uso
 const token = generateToken('userId123');
 console.log('Generated Token:', token);
+
+
+// código não usado 

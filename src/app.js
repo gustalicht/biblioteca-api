@@ -65,7 +65,7 @@ app.use('/emprestimos', loanRoutes);
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
 
-  // Simulação de autenticação. Em produção, substitua por verificação de credenciais no banco de dados.
+  // Simulação de autenticação
   if (username === 'user' && password === 'password') {
     const token = jwt.sign({ id: 1, username: 'user' }, 'secret');
     return res.status(200).json({ token });
