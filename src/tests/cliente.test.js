@@ -11,7 +11,9 @@ describe('API de Clientes', () => {
   let token;
 
   beforeAll(async () => {
-    const response = await request(app).post('/login');
+    const response = await request(app)
+    .post('/login')
+    .send({ username: 'user', password: 'password' });
     token = response.body.token;
   });
 

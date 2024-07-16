@@ -17,7 +17,9 @@ describe('API de Empréstimos', () => {
   let token;
 
   beforeAll(async () => {
-    const response = await request(app).post('/login').send({ username: 'user', password: 'password' });;
+    const response = await request(app)
+    .post('/login')
+    .send({ username: 'user', password: 'password' });
     token = response.body.token;
   });
 
