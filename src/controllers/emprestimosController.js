@@ -34,6 +34,7 @@ exports.createLoan = (req, res) => {
       bookId: livro.id,
       dateTaken: new Date(),
       dateDue: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 dias depois
+      //dateDue: new Date(Date.now() + 1 * 60 * 1000), // 1 minuto depois
       returned: false
     };
 
@@ -66,6 +67,8 @@ exports.returnBook = (req, res) => {
     const dateReturned = new Date();
     const daysLate = Math.max(0, (dateReturned - new Date(emprestimo.dateDue)) / (1000 * 60 * 60 * 24));
     res.status(200).json({ emprestimo, daysLate });
+    // const minutesLate = Math.max(0, (dateReturned - new Date(emprestimo.dateDue)) / (1000 * 60));
+    // res.status(200).json({ emprestimo, minutesLate }); para alterar para 1 minuto de atraso
   } catch (error) {
     res.status(500).json({ message: 'Erro ao devolver livro' });
   }
