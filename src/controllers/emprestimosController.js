@@ -1,75 +1,89 @@
-const emprestimos = require('../models/emprestimo');
-const livros = require('../models/livro');
-const clientes = require('../models/cliente');
+const { Emprestimo, Cliente, Livro } = require('../../models');
 
-exports.getAllLoans = (req, res) => {
+exports.getAllLoans = async (req, res) => {
   try {
-    res.status(200).json(emprestimos);
+    const loans = await Emprestimo.findAll();
+    res.status(200).json(loans);
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao buscar empréstimos' });
+    res.status(500).json({ message: 'Error fetching loans', error });
   }
 };
 
-exports.createLoan = (req, res) => {
+exports.getLoanById = async (req, res) => {
   try {
-    const cliente = clientes.find(c => c.id === parseInt(req.body.clientId));
-    const livro = livros.find(b => b.id === parseInt(req.body.bookId));
-
-    if (!cliente) {
-      return res.status(404).json({ message: 'Cliente não encontrado' });
+    const loan = await Emprestimo.findByPk(req.params.id);
+    if (loan) {
+      res.status(200).json(loan);
+    } else {
+      res.status(404).json({ message: 'Loan not found' });
     }
-
-    if (!livro || !livro.disponivel) {
-      return res.status(404).json({ message: 'Livro não encontrado ou não disponível' });
-    }
-
-    const emprestimosAtivos = emprestimos.filter(emprestimo => emprestimo.clientId === cliente.id && !emprestimo.returned);
-    if (emprestimosAtivos.length >= 3) {
-      return res.status(400).json({ message: 'Cliente já possui 3 empréstimos ativos' });
-    }
-
-    const emprestimo = {
-      id: emprestimos.length + 1,
-      clientId: cliente.id,
-      bookId: livro.id,
-      dateTaken: new Date(),
-      dateDue: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 dias depois
-      //dateDue: new Date(Date.now() + 1 * 60 * 1000), // 1 minuto depois
-      returned: false
-    };
-
-    emprestimos.push(emprestimo);
-    livro.disponivel = false;
-    res.status(201).json(emprestimo);
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao criar empréstimo' });
+    res.status(500).json({ message: 'Error fetching loan', error });
   }
 };
 
-exports.returnBook = (req, res) => {
+exports.createLoan = async (req, res) => {
+  const { clientId, bookId, loanDate, returnDate, returned } = req.body;
+  if (!clientId || !bookId || !loanDate || !returnDate || returned === undefined) {
+    return res.status(400).json({ message: 'The fields clientId, bookId, loanDate, returnDate, and returned are required' });
+  }
+
   try {
-    const emprestimo = emprestimos.find(l => l.id === parseInt(req.params.id));
-
-    if (!emprestimo) {
-      return res.status(404).json({ message: 'Empréstimo não encontrado' });
-    }
-
-    if (emprestimo.returned) {
-      return res.status(400).json({ message: 'Livro já devolvido' });
-    }
-
-    emprestimo.returned = true;
-    const livro = livros.find(b => b.id === emprestimo.bookId);
-    if (livro) {
-      livro.disponivel = true;
-    }
-
-    const dateReturned = new Date();
-    const daysLate = Math.max(0, (dateReturned - new Date(emprestimo.dateDue)) / (1000 * 60 * 60 * 24));
-    res.status(200).json({ emprestimo, daysLate });
-    // const minutesLate = Math.max(0, (dateReturned - new Date(emprestimo.dateDue)) / (1000 * 60));
-    // res.status(200).json({ emprestimo, minutesLate }); para alterar para 1 minuto de atraso
+    const loan = await Emprestimo.create({ clientId, bookId, loanDate, returnDate, returned });
+    res.status(201).json(loan);
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao devolver livro' });
+    res.status(500).json({ message: 'Error creating loan', error });
+  }
+};
+
+exports.updateLoan = async (req, res) => {
+  const { clientId, bookId, loanDate, returnDate, returned } = req.body;
+  if (!clientId || !bookId || !loanDate || !returnDate || returned === undefined) {
+    return res.status(400).json({ message: 'The fields clientId, bookId, loanDate, returnDate, and returned are required' });
+  }
+
+  try {
+    const [updated] = await Emprestimo.update({ clientId, bookId, loanDate, returnDate, returned }, { where: { id: req.params.id } });
+    if (updated) {
+      const updatedLoan = await Emprestimo.findByPk(req.params.id);
+      res.status(200).json(updatedLoan);
+    } else {
+      res.status(404).json({ message: 'Loan not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating loan', error });
+  }
+};
+
+exports.deleteLoan = async (req, res) => {
+  try {
+    const deleted = await Emprestimo.destroy({ where: { id: req.params.id } });
+    if (deleted) {
+      res.status(204).send();
+    } else {
+      res.status(404).json({ message: 'Loan not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting loan', error });
+  }
+};
+
+exports.returnBook = async (req, res) => {
+  try {
+    const loan = await Emprestimo.findByPk(req.params.id);
+    if (loan) {
+      loan.returned = true;
+      await loan.save();
+      const book = await Livro.findByPk(loan.bookId);
+      if (book) {
+        book.available = true;
+        await book.save();
+      }
+      res.status(200).json(loan);
+    } else {
+      res.status(404).json({ message: 'Loan not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error returning book', error });
   }
 };

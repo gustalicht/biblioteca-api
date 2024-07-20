@@ -1,72 +1,69 @@
-const livros = require('../models/livro');
+const { Livro } = require('../../models');
 
-exports.getAllBooks = (req, res) => {
+exports.getAllBooks = async (req, res) => {
   try {
-    res.status(200).json(livros);
+    const books = await Livro.findAll();
+    res.status(200).json(books);
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao buscar livros' });
+    res.status(500).json({ message: 'Error fetching books', error });
   }
 };
 
-exports.getBookById = (req, res) => {
+exports.getBookById = async (req, res) => {
   try {
-    const livro = livros.find(b => b.id === parseInt(req.params.id));
-    if (livro) {
-      res.status(200).json(livro);
+    const book = await Livro.findByPk(req.params.id);
+    if (book) {
+      res.status(200).json(book);
     } else {
-      res.status(404).json({ message: 'Livro não encontrado' });
+      res.status(404).json({ message: 'Book not found' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao buscar livro' });
+    res.status(500).json({ message: 'Error fetching book', error });
   }
 };
 
-exports.createBook = (req, res) => {
+exports.createBook = async (req, res) => {
+  const { isbn, title, authors, publisher, year, available } = req.body;
+  if (!isbn || !title || !authors || !publisher || !year || available === undefined) {
+    return res.status(400).json({ message: 'The fields isbn, title, authors, publisher, year, and available are required' });
+  }
+
   try {
-    const livro = {
-      id: livros.length + 1,
-      isbn: req.body.isbn,
-      titulo: req.body.titulo,
-      autores: req.body.autores,
-      editora: req.body.editora,
-      ano: req.body.ano,
-      disponivel: true
-    };
-    livros.push(livro);
-    res.status(201).json(livro);
+    const book = await Livro.create({ isbn, title, authors, publisher, year, available });
+    res.status(201).json(book);
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao criar livro' });
+    res.status(500).json({ message: 'Error creating book', error });
   }
 };
 
-exports.updateBook = (req, res) => {
+exports.updateBook = async (req, res) => {
+  const { isbn, title, authors, publisher, year, available } = req.body;
+  if (!isbn || !title || !authors || !publisher || !year || available === undefined) {
+    return res.status(400).json({ message: 'The fields isbn, title, authors, publisher, year, and available are required' });
+  }
+
   try {
-    const livro = livros.find(b => b.id === parseInt(req.params.id));
-    if (livro) {
-      livro.isbn = req.body.isbn || livro.isbn;
-      livro.titulo = req.body.titulo || livro.titulo;
-      livro.autores = req.body.autores || livro.autores;
-      livro.editora = req.body.editora || livro.editora;
-      livro.ano = req.body.ano || livro.ano;
-      res.status(200).json(livro);
+    const [updated] = await Livro.update({ isbn, title, authors, publisher, year, available }, { where: { id: req.params.id } });
+    if (updated) {
+      const updatedBook = await Livro.findByPk(req.params.id);
+      res.status(200).json(updatedBook);
     } else {
-      res.status(404).json({ message: 'Livro não encontrado' });
+      res.status(404).json({ message: 'Book not found' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao atualizar livro' });
+    res.status(500).json({ message: 'Error updating book', error });
   }
 };
 
-exports.deleteBook = (req, res) => {
+exports.deleteBook = async (req, res) => {
   try {
-    const index = livros.findIndex(b => b.id === parseInt(req.params.id));
-    if (index !== -1) {
-      livros.splice(index, 1);
+    const deleted = await Livro.destroy({ where: { id: req.params.id } });
+    if (deleted) {
       res.status(204).send();
     } else {
-      res.status(404).json({ message: 'Livro não encontrado' });
+      res.status(404).json({ message: 'Book not found' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao deletar livro' });
+    res.status(500).json({ message: 'Error deleting book', error });
   }
 };

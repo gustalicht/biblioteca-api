@@ -1,65 +1,69 @@
-const autores = require('../models/autor');
+const { Autor } = require('../../models');
 
-exports.getAllAuthors = (req, res) => {
+exports.getAllAuthors = async (req, res) => {
   try {
-    res.status(200).json(autores);
+    const authors = await Autor.findAll();
+    res.status(200).json(authors);
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao buscar autores' });
+    res.status(500).json({ message: 'Error fetching authors', error });
   }
 };
 
-exports.getAuthorById = (req, res) => {
+exports.getAuthorById = async (req, res) => {
   try {
-    const autor = autores.find(a => a.id === parseInt(req.params.id));
-    if (autor) {
-      res.status(200).json(autor);
+    const author = await Autor.findByPk(req.params.id);
+    if (author) {
+      res.status(200).json(author);
     } else {
-      res.status(404).json({ message: 'Autor não encontrado' });
+      res.status(404).json({ message: 'Author not found' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao buscar autor' });
+    res.status(500).json({ message: 'Error fetching author', error });
   }
 };
 
-exports.createAuthor = (req, res) => {
+exports.createAuthor = async (req, res) => {
+  const { name, country } = req.body;
+  if (!name || !country) {
+    return res.status(400).json({ message: 'The fields name and country are required' });
+  }
+
   try {
-    const autor = {
-      id: autores.length + 1,
-      nome: req.body.nome,
-      pais: req.body.pais
-    };
-    autores.push(autor);
-    res.status(201).json(autor);
+    const author = await Autor.create({ name, country });
+    res.status(201).json(author);
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao criar autor' });
+    res.status(500).json({ message: 'Error creating author', error });
   }
 };
 
-exports.updateAuthor = (req, res) => {
+exports.updateAuthor = async (req, res) => {
+  const { name, country } = req.body;
+  if (!name || !country) {
+    return res.status(400).json({ message: 'The fields name and country are required' });
+  }
+
   try {
-    const autor = autores.find(a => a.id === parseInt(req.params.id));
-    if (autor) {
-      autor.nome = req.body.nome || autor.nome;
-      autor.pais = req.body.pais || autor.pais;
-      res.status(200).json(autor);
+    const [updated] = await Autor.update({ name, country }, { where: { id: req.params.id } });
+    if (updated) {
+      const updatedAuthor = await Autor.findByPk(req.params.id);
+      res.status(200).json(updatedAuthor);
     } else {
-      res.status(404).json({ message: 'Autor não encontrado' });
+      res.status(404).json({ message: 'Author not found' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao atualizar autor' });
+    res.status(500).json({ message: 'Error updating author', error });
   }
 };
 
-exports.deleteAuthor = (req, res) => {
+exports.deleteAuthor = async (req, res) => {
   try {
-    const index = autores.findIndex(a => a.id === parseInt(req.params.id));
-    if (index !== -1) {
-      autores.splice(index, 1);
+    const deleted = await Autor.destroy({ where: { id: req.params.id } });
+    if (deleted) {
       res.status(204).send();
     } else {
-      res.status(404).json({ message: 'Autor não encontrado' });
+      res.status(404).json({ message: 'Author not found' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao deletar autor' });
+    res.status(500).json({ message: 'Error deleting author', error });
   }
 };
