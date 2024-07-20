@@ -5,7 +5,7 @@ exports.getAllClients = async (req, res) => {
     const clients = await Cliente.findAll();
     res.status(200).json(clients);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching clients', error });
+    res.status(500).json({ message: 'Erro ao encontrar clientes', error });
   }
 };
 
@@ -15,43 +15,43 @@ exports.getClientById = async (req, res) => {
     if (client) {
       res.status(200).json(client);
     } else {
-      res.status(404).json({ message: 'Client not found' });
+      res.status(404).json({ message: 'Cliente não encontrado!' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching client', error });
+    res.status(500).json({ message: 'Erro ao encontrar Cliente!', error });
   }
 };
 
 exports.createClient = async (req, res) => {
-  const { registration, name, phone } = req.body;
-  if (!registration || !name || !phone) {
-    return res.status(400).json({ message: 'The fields registration, name, and phone are required' });
+  const { matricula, nome, telefone } = req.body;
+  if (!matricula || !nome || !telefone) {
+    return res.status(400).json({ message: 'O registro, nome e telefone são obrigatorios!' });
   }
 
   try {
-    const client = await Cliente.create({ registration, name, phone });
+    const client = await Cliente.create({ matricula, nome, telefone });
     res.status(201).json(client);
   } catch (error) {
-    res.status(500).json({ message: 'Error creating client', error });
+    res.status(500).json({ message: 'Erro ao criar cliente!', error });
   }
 };
 
 exports.updateClient = async (req, res) => {
-  const { registration, name, phone } = req.body;
-  if (!registration || !name || !phone) {
-    return res.status(400).json({ message: 'The fields registration, name, and phone are required' });
+  const { matricula, nome, telefone } = req.body;
+  if (!matricula || !nome || !telefone) {
+    return res.status(400).json({ message: 'O registro, nome e telefone são obrigatorios!' });
   }
 
   try {
-    const [updated] = await Cliente.update({ registration, name, phone }, { where: { id: req.params.id } });
+    const [updated] = await Cliente.update({ matricula, nome, telefone }, { where: { id: req.params.id } });
     if (updated) {
       const updatedClient = await Cliente.findByPk(req.params.id);
       res.status(200).json(updatedClient);
     } else {
-      res.status(404).json({ message: 'Client not found' });
+      res.status(404).json({ message: 'Cliente não encontrado!' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error updating client', error });
+    res.status(500).json({ message: 'Erro ao atualizar cliente!', error });
   }
 };
 
@@ -61,9 +61,9 @@ exports.deleteClient = async (req, res) => {
     if (deleted) {
       res.status(204).send();
     } else {
-      res.status(404).json({ message: 'Client not found' });
+      res.status(404).json({ message: 'Cliente não encontrado!' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting client', error });
+    res.status(500).json({ message: 'Erro ao deletar cliente!', error });
   }
 };

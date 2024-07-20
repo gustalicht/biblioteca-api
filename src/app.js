@@ -6,6 +6,7 @@ const clientRoutes = require('./routes/clienteRoutes');
 const loanRoutes = require('./routes/emprestimoRoutes');
 const jwt = require('jsonwebtoken');
 const setupSwagger = require('./swagger');
+const { User } = require('../../models');
 
 const app = express();
 
@@ -62,16 +63,18 @@ app.use('/emprestimos', loanRoutes);
  *       401:
  *         description: Falha na autenticação
  */
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
-  // Simulação de autenticação
-  if (username === 'user' && password === 'password') {
-    const token = jwt.sign({ id: 1, username: 'user' }, 'secret');
-    return res.status(200).json({ token });
-  }
+  try {
+    const user = await User.findOne({ where: { username } });
+    if (!user || user.password !== password) {
+      return res.status(401).json({ error: 'Autenticação inválida.' });
+    }
 
-  res.status(401).json({ error: 'Autenticação inválida.' });
-});
-
+    const token = jwt.sign({ id: user.id, username: user.username }, 'secret');
+    res.status(200).json({ token });
+  } catch (error) {
+    res.status(500).json({ error: 'Erro no servidor.' });
+  }});
 module.exports = app;

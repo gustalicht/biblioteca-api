@@ -1,56 +1,63 @@
 const request = require('supertest');
 const app = require('../app');
-const livros = require('../models/livro');
+const { Cliente } = require('../../models');
 
-beforeEach(() => {
-  livros.length = 0;
-  livros.push({ id: 1, isbn: '111', titulo: 'Livro 1', autores: ['Autor 1'], editora: 'Editora 1', ano: 2021, disponivel: true });
+beforeEach(async () => {
+  await Cliente.destroy({ where: {} }); // Limpar tabela antes de cada teste
+  await Cliente.create({ id: 1, matricula: '1234', nome: 'Cliente 1', telefone: '555-1234' });
 });
 
-describe('API de Livros', () => {
+describe('Cliente API', () => {
   let token;
 
   beforeAll(async () => {
     const response = await request(app)
-    .post('/login')
-    .send({ username: 'user', password: 'password' });
+      .post('/login')
+      .send({ username: 'user', password: 'password' });
     token = response.body.token;
   });
 
-  test('GET /livros - deve retornar todos os livros', async () => {
+  test('GET /clientes - deve retornar todos os clientes', async () => {
     const response = await request(app)
-      .get('/livros')
+      .get('/clientes')
       .set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(200);
     expect(response.body.length).toBe(1);
   });
 
-  test('POST /livros - deve criar um novo livro', async () => {
-    const novoLivro = { isbn: '222', titulo: 'Livro 2', autores: ['Autor 2'], editora: 'Editora 2', ano: 2022, disponivel: true };
+  test('POST /clientes - deve criar e retornar um novo cliente', async () => {
+    const novoCliente = { matricula: '5678', nome: 'Cliente 2', telefone: '555-5678' };
     const response = await request(app)
-      .post('/livros')
+      .post('/clientes')
       .set('Authorization', `Bearer ${token}`)
-      .send(novoLivro);
+      .send(novoCliente);
     expect(response.status).toBe(201);
-    expect(response.body.titulo).toBe(novoLivro.titulo);
-    expect(livros.length).toBe(2);
+    expect(response.body.nome).toBe(novoCliente.nome);
+
+    const clientes = await Cliente.findAll();
+    expect(clientes.length).toBe(2);
   });
 
-  test('PUT /livros/:id - deve atualizar um livro', async () => {
-    const livroAtualizado = { titulo: 'Livro Atualizado 1', editora: 'Editora Atualizada 1' };
+  test('PUT /clientes/:id - deve atualizar e retornar o cliente atualizado', async () => {
+    const clienteAtualizado = { matricula: '1234', nome: 'Cliente Atualizado 1', telefone: '555-1234' };
     const response = await request(app)
-      .put('/livros/1')
+      .put('/clientes/1')
       .set('Authorization', `Bearer ${token}`)
-      .send(livroAtualizado);
+      .send(clienteAtualizado);
     expect(response.status).toBe(200);
-    expect(response.body.titulo).toBe(livroAtualizado.titulo);
+    expect(response.body.nome).toBe(clienteAtualizado.nome);
+
+    const cliente = await Cliente.findByPk(1);
+    expect(cliente.nome).toBe(clienteAtualizado.nome);
   });
 
-  test('DELETE /livros/:id - deve deletar um livro', async () => {
+  test('DELETE /clientes/:id - deve deletar o cliente e retornar no content', async () => {
     const response = await request(app)
-      .delete('/livros/1')
+      .delete('/clientes/1')
       .set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(204);
-    expect(livros.length).toBe(0);
+
+    const clientes = await Cliente.findAll();
+    expect(clientes.length).toBe(0);
   });
 });

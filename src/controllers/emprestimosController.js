@@ -5,7 +5,7 @@ exports.getAllLoans = async (req, res) => {
     const loans = await Emprestimo.findAll();
     res.status(200).json(loans);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching loans', error });
+    res.status(500).json({ message: 'Erro ao encontrar os emprestimos', error });
   }
 };
 
@@ -18,7 +18,7 @@ exports.getLoanById = async (req, res) => {
       res.status(404).json({ message: 'Loan not found' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching loan', error });
+    res.status(500).json({ message: 'Erro ao encontrar o emprestimo', error });
   }
 };
 
@@ -39,7 +39,7 @@ exports.createLoan = async (req, res) => {
 exports.updateLoan = async (req, res) => {
   const { clientId, bookId, loanDate, returnDate, returned } = req.body;
   if (!clientId || !bookId || !loanDate || !returnDate || returned === undefined) {
-    return res.status(400).json({ message: 'The fields clientId, bookId, loanDate, returnDate, and returned are required' });
+    return res.status(400).json({ message: 'Todos os campos são obrigatorios!' });
   }
 
   try {
@@ -48,10 +48,10 @@ exports.updateLoan = async (req, res) => {
       const updatedLoan = await Emprestimo.findByPk(req.params.id);
       res.status(200).json(updatedLoan);
     } else {
-      res.status(404).json({ message: 'Loan not found' });
+      res.status(404).json({ message: 'Emprestimo não encontrado!' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error updating loan', error });
+    res.status(500).json({ message: 'Erro ao atualizar o emprestimo!', error });
   }
 };
 
@@ -61,10 +61,10 @@ exports.deleteLoan = async (req, res) => {
     if (deleted) {
       res.status(204).send();
     } else {
-      res.status(404).json({ message: 'Loan not found' });
+      res.status(404).json({ message: 'Emprestimo não encontrado!' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting loan', error });
+    res.status(500).json({ message: 'Erro ao deletar o emprestimo!', error });
   }
 };
 
@@ -81,9 +81,9 @@ exports.returnBook = async (req, res) => {
       }
       res.status(200).json(loan);
     } else {
-      res.status(404).json({ message: 'Loan not found' });
+      res.status(404).json({ message: 'Emprestimo não encontrado!' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error returning book', error });
+    res.status(500).json({ message: 'Erro ao retornar o livro!', error });
   }
 };

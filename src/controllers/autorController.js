@@ -5,7 +5,7 @@ exports.getAllAuthors = async (req, res) => {
     const authors = await Autor.findAll();
     res.status(200).json(authors);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching authors', error });
+    res.status(500).json({ message: 'Erro ao buscar os autores', error });
   }
 };
 
@@ -15,43 +15,43 @@ exports.getAuthorById = async (req, res) => {
     if (author) {
       res.status(200).json(author);
     } else {
-      res.status(404).json({ message: 'Author not found' });
+      res.status(404).json({ message: 'Autor não encontrado' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching author', error });
+    res.status(500).json({ message: 'Erro ao buscar autor.', error });
   }
 };
 
 exports.createAuthor = async (req, res) => {
-  const { name, country } = req.body;
-  if (!name || !country) {
-    return res.status(400).json({ message: 'The fields name and country are required' });
+  const { nome, pais } = req.body;
+  if (!nome || !pais) {
+    return res.status(400).json({ message: 'O nome e o pais são obrigatórios!' });
   }
 
   try {
-    const author = await Autor.create({ name, country });
+    const author = await Autor.create({ nome, pais });
     res.status(201).json(author);
   } catch (error) {
-    res.status(500).json({ message: 'Error creating author', error });
+    res.status(500).json({ message: 'Erro ao criar autor', error });
   }
 };
 
 exports.updateAuthor = async (req, res) => {
-  const { name, country } = req.body;
-  if (!name || !country) {
-    return res.status(400).json({ message: 'The fields name and country are required' });
+  const { nome, pais } = req.body;
+  if (!nome || !pais) {
+    return res.status(400).json({ message: 'Nome e Pais são obrigatorios!' });
   }
 
   try {
-    const [updated] = await Autor.update({ name, country }, { where: { id: req.params.id } });
+    const [updated] = await Autor.update({ nome, pais }, { where: { id: req.params.id } });
     if (updated) {
       const updatedAuthor = await Autor.findByPk(req.params.id);
       res.status(200).json(updatedAuthor);
     } else {
-      res.status(404).json({ message: 'Author not found' });
+      res.status(404).json({ message: 'Autor não encontrado' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error updating author', error });
+    res.status(500).json({ message: 'Erro ao atualizar o Autor!', error });
   }
 };
 
@@ -61,9 +61,9 @@ exports.deleteAuthor = async (req, res) => {
     if (deleted) {
       res.status(204).send();
     } else {
-      res.status(404).json({ message: 'Author not found' });
+      res.status(404).json({ message: 'Autor não encontrado' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting author', error });
+    res.status(500).json({ message: 'Erro ao deletar autor!', error });
   }
 };
