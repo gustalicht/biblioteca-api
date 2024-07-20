@@ -38,22 +38,29 @@ exports.createLoan = async (req, res) => {
 
 exports.updateLoan = async (req, res) => {
   const { clientId, bookId, loanDate, returnDate, returned } = req.body;
-  if (!clientId || !bookId || !loanDate || !returnDate || returned === undefined) {
-    return res.status(400).json({ message: 'Todos os campos são obrigatorios!' });
+
+  // Verifica se nenhum campo foi enviado
+  if (!clientId && !bookId) {
+    return res.status(400).json({ message: 'Você deve preencher pelo menos um campo para atualizar!' });
   }
 
   try {
-    const [updated] = await Emprestimo.update({ clientId, bookId, loanDate, returnDate, returned }, { where: { id: req.params.id } });
+    const [updated] = await Loan.update(
+      { clientId, bookId, loanDate, returnDate, returned },
+      { where: { id: req.params.id } }
+    );
+
     if (updated) {
-      const updatedLoan = await Emprestimo.findByPk(req.params.id);
+      const updatedLoan = await Loan.findByPk(req.params.id);
       res.status(200).json(updatedLoan);
     } else {
-      res.status(404).json({ message: 'Emprestimo não encontrado!' });
+      res.status(404).json({ message: 'Empréstimo não encontrado' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao atualizar o emprestimo!', error });
+    res.status(500).json({ message: 'Erro ao atualizar empréstimo', error });
   }
 };
+
 
 exports.deleteLoan = async (req, res) => {
   try {

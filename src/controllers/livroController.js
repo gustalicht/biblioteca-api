@@ -38,12 +38,18 @@ exports.createBook = async (req, res) => {
 
 exports.updateBook = async (req, res) => {
   const { isbn, titulo, autores, editora, ano, disponivel } = req.body;
-  if (!isbn || !titulo || !autores || !editora || !ano || disponivel === undefined) {
-    return res.status(400).json({ message: 'todos os campos são obrigaotorios!' });
+
+  // Verifica se nenhum campo foi enviado
+  if (!isbn && !titulo && !autores && !editora && !ano && disponivel === undefined) {
+    return res.status(400).json({ message: 'Você deve preencher pelo menos um campo para atualizar!' });
   }
 
   try {
-    const [updated] = await Livro.update({ isbn, titulo, autores, editora, ano, disponivel }, { where: { id: req.params.id } });
+    const [updated] = await Livro.update(
+      { isbn, titulo, autores, editora, ano, disponivel },
+      { where: { id: req.params.id } }
+    );
+
     if (updated) {
       const updatedBook = await Livro.findByPk(req.params.id);
       res.status(200).json(updatedBook);
@@ -51,9 +57,10 @@ exports.updateBook = async (req, res) => {
       res.status(404).json({ message: 'Livro não encontrado' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao atualizar o  livro', error });
+    res.status(500).json({ message: 'Erro ao atualizar livro', error });
   }
 };
+
 
 exports.deleteBook = async (req, res) => {
   try {

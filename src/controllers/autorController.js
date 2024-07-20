@@ -38,20 +38,25 @@ exports.createAuthor = async (req, res) => {
 
 exports.updateAuthor = async (req, res) => {
   const { nome, pais } = req.body;
-  if (!nome || !pais) {
-    return res.status(400).json({ message: 'Nome e Pais são obrigatorios!' });
+  
+  if (!nome && !pais) {
+    return res.status(400).json({ message: 'Você deve preencher pelo menos um campo para atualizar!' });
   }
 
   try {
-    const [updated] = await Autor.update({ nome, pais }, { where: { id: req.params.id } });
+    const [updated] = await Author.update(
+      { nome, pais },
+      { where: { id: req.params.id } }
+    );
+
     if (updated) {
-      const updatedAuthor = await Autor.findByPk(req.params.id);
+      const updatedAuthor = await Author.findByPk(req.params.id);
       res.status(200).json(updatedAuthor);
     } else {
       res.status(404).json({ message: 'Autor não encontrado' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao atualizar o Autor!', error });
+    res.status(500).json({ message: 'Erro ao atualizar autor', error });
   }
 };
 

@@ -35,25 +35,31 @@ exports.createClient = async (req, res) => {
     res.status(500).json({ message: 'Erro ao criar cliente!', error });
   }
 };
-
 exports.updateClient = async (req, res) => {
   const { matricula, nome, telefone } = req.body;
-  if (!matricula || !nome || !telefone) {
-    return res.status(400).json({ message: 'O registro, nome e telefone são obrigatorios!' });
+
+  // Verifica se nenhum campo foi enviado
+  if (!matricula && !nome && !telefone) {
+    return res.status(400).json({ message: 'Você deve preencher pelo menos um campo para atualizar!' });
   }
 
   try {
-    const [updated] = await Cliente.update({ matricula, nome, telefone }, { where: { id: req.params.id } });
+    const [updated] = await Cliente.update(
+      { matricula, nome, telefone },
+      { where: { id: req.params.id } }
+    );
+
     if (updated) {
       const updatedClient = await Cliente.findByPk(req.params.id);
       res.status(200).json(updatedClient);
     } else {
-      res.status(404).json({ message: 'Cliente não encontrado!' });
+      res.status(404).json({ message: 'Cliente não encontrado' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao atualizar cliente!', error });
+    res.status(500).json({ message: 'Erro ao atualizar cliente', error });
   }
 };
+
 
 exports.deleteClient = async (req, res) => {
   try {
