@@ -6,7 +6,7 @@ const clientRoutes = require('./routes/clienteRoutes');
 const loanRoutes = require('./routes/emprestimoRoutes');
 const jwt = require('jsonwebtoken');
 const setupSwagger = require('./swagger');
-const { User } = require('./models');
+const { User } = require('../models');
 
 const app = express();
 
