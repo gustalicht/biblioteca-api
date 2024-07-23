@@ -3,19 +3,22 @@ const bodyParser = require('body-parser');
 const authorRoutes = require('./routes/autorRoutes');
 const bookRoutes = require('./routes/livroRoutes');
 const clientRoutes = require('./routes/clienteRoutes');
+const loggerMiddleware = require('./middleware/loggerMiddleware');
+const auth = require('./middleware/auth');
 const loanRoutes = require('./routes/emprestimoRoutes');
 const jwt = require('jsonwebtoken');
 const setupSwagger = require('./swagger');
-const { User } = require('../models');
+const { User } = require('../models/users');
 
 const app = express();
 
 app.use(bodyParser.json());
+app.use(loggerMiddleware);
 setupSwagger(app);
-app.use('/autores', authorRoutes);
-app.use('/livros', bookRoutes);
-app.use('/clientes', clientRoutes);
-app.use('/emprestimos', loanRoutes);
+app.use('/autores',auth, authorRoutes);
+app.use('/livros', auth,bookRoutes);
+app.use('/clientes',auth, clientRoutes);
+app.use('/emprestimos',auth, loanRoutes);
 
 /**
  * @swagger

@@ -1,7 +1,5 @@
-const Emprestimo  = require('../../models/emprestimo');
-const Cliente = require('../../models/cliente');
-const Livro = require('../../models/livro')
-
+const { Emprestimo, Cliente, Livro } = require('../../models');
+const logger = require('../utils/logger');
 
 exports.getAllLoans = async (req, res) => {
   try {
@@ -26,6 +24,7 @@ exports.getLoanById = async (req, res) => {
 };
 
 exports.createLoan = async (req, res) => {
+  logger.info('createLoan called with body: %o', req.body);
   const cliente = await Cliente.findByPk(req.body.clienteId);
   const livro = await Livro.findByPk(req.body.livroId);
 
@@ -40,7 +39,7 @@ exports.createLoan = async (req, res) => {
   const emprestimosAtivos = await Emprestimo.count({
     where: {
       clienteId: cliente.id,
-      returned: false
+      devolvido: false
     }
   });
 
@@ -48,16 +47,16 @@ exports.createLoan = async (req, res) => {
     return res.status(400).json({ message: 'Cliente já possui 3 empréstimos ativos' });
   }
 
-  const loanDate = new Date();
-  const returnDate = req.body.testMode ? new Date(Date.now() + 1 * 60 * 1000) : new Date(Date.now() + 14 * 24 * 60 * 60 * 1000); // 14 dias ou 1 minuto para teste
+  const dataEmprestimo = new Date();
+  const dataDevolucao = req.body.testMode ? new Date(Date.now() + 1 * 60 * 1000) : new Date(Date.now() + 14 * 24 * 60 * 60 * 1000); // 14 dias ou 1 minuto para teste
 
   try {
     const loan = await Emprestimo.create({
       clienteId: cliente.id,
       livroId: livro.id,
-      loanDate,
-      returnDate,
-      returned: false
+      dataEmprestimo,
+      dataDevolucao,
+      devolvido: false
     });
 
     livro.disponivel = false;
@@ -71,7 +70,7 @@ exports.createLoan = async (req, res) => {
 };
 
 exports.updateLoan = async (req, res) => {
-  const { clienteId, livroId, loanDate, returnDate, returned } = req.body;
+  const { clienteId, livroId, dataEmprestimo, dataDevolucao, devolvido } = req.body;
 
   // Verifica se nenhum campo foi enviado
   if (!clienteId && !livroId) {
@@ -80,7 +79,7 @@ exports.updateLoan = async (req, res) => {
 
   try {
     const [updated] = await Loan.update(
-      { clienteId, livroId, loanDate, returnDate, returned },
+      { clienteId, livroId, dataEmprestimo, dataDevolucao, devolvido },
       { where: { id: req.params.id } }
     );
 
@@ -113,7 +112,7 @@ exports.returnBook = async (req, res) => {
   try {
     const loan = await Emprestimo.findByPk(req.params.id);
     if (loan) {
-      loan.returned = true;
+      loan.devolvido = true;
       await loan.save();
       const book = await Livro.findByPk(loan.livroId);
       if (book) {

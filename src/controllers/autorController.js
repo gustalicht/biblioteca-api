@@ -1,6 +1,9 @@
-const { Autor } = require('../../models/autor');
+const { Autor } = require('../../models');
+const logger = require('../utils/logger');
+
 
 exports.getAllAuthors = async (req, res) => {
+  logger.info('getAllAuthors sendo chamado');
   try {
     const authors = await Autor.findAll();
     res.status(200).json(authors);

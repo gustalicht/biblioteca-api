@@ -1,4 +1,5 @@
-const { Livro } = require('../../models/livro');
+const { Livro } = require('../../models');
+const logger = require('../utils/logger');
 
 exports.getAllBooks = async (req, res) => {
   try {

@@ -1,6 +1,8 @@
-const { Cliente } = require('../../models/cliente');
+const { Cliente } = require('../../models');
+const logger = require('../utils/logger');
 
 exports.getAllClients = async (req, res) => {
+  logger.info('ta chegando aqui');
   try {
     const clients = await Cliente.findAll();
     res.status(200).json(clients);
