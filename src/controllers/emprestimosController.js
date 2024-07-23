@@ -1,4 +1,7 @@
-const { Emprestimo, Cliente, Livro } = require('../../models');
+const Emprestimo  = require('../../models/emprestimo');
+const Cliente = require('../../models/cliente');
+const Livro = require('../../models/livro')
+
 
 exports.getAllLoans = async (req, res) => {
   try {
@@ -23,30 +26,61 @@ exports.getLoanById = async (req, res) => {
 };
 
 exports.createLoan = async (req, res) => {
-  const { clientId, bookId, loanDate, returnDate, returned } = req.body;
-  if (!clientId || !bookId || !loanDate || !returnDate || returned === undefined) {
-    return res.status(400).json({ message: 'The fields clientId, bookId, loanDate, returnDate, and returned are required' });
+  const cliente = await Cliente.findByPk(req.body.clienteId);
+  const livro = await Livro.findByPk(req.body.livroId);
+
+  if (!cliente) {
+    return res.status(404).json({ message: 'Cliente não encontrado' });
   }
 
+  if (!livro || !livro.disponivel) {
+    return res.status(404).json({ message: 'Livro não encontrado ou não disponível' });
+  }
+
+  const emprestimosAtivos = await Emprestimo.count({
+    where: {
+      clienteId: cliente.id,
+      returned: false
+    }
+  });
+
+  if (emprestimosAtivos >= 3) {
+    return res.status(400).json({ message: 'Cliente já possui 3 empréstimos ativos' });
+  }
+
+  const loanDate = new Date();
+  const returnDate = req.body.testMode ? new Date(Date.now() + 1 * 60 * 1000) : new Date(Date.now() + 14 * 24 * 60 * 60 * 1000); // 14 dias ou 1 minuto para teste
+
   try {
-    const loan = await Emprestimo.create({ clientId, bookId, loanDate, returnDate, returned });
+    const loan = await Emprestimo.create({
+      clienteId: cliente.id,
+      livroId: livro.id,
+      loanDate,
+      returnDate,
+      returned: false
+    });
+
+    livro.disponivel = false;
+    await livro.save();
+
     res.status(201).json(loan);
   } catch (error) {
-    res.status(500).json({ message: 'Error creating loan', error });
+    res.status(500).json({ message: 'Erro ao criar empréstimo', error });
   }
+
 };
 
 exports.updateLoan = async (req, res) => {
-  const { clientId, bookId, loanDate, returnDate, returned } = req.body;
+  const { clienteId, livroId, loanDate, returnDate, returned } = req.body;
 
   // Verifica se nenhum campo foi enviado
-  if (!clientId && !bookId) {
+  if (!clienteId && !livroId) {
     return res.status(400).json({ message: 'Você deve preencher pelo menos um campo para atualizar!' });
   }
 
   try {
     const [updated] = await Loan.update(
-      { clientId, bookId, loanDate, returnDate, returned },
+      { clienteId, livroId, loanDate, returnDate, returned },
       { where: { id: req.params.id } }
     );
 
@@ -81,7 +115,7 @@ exports.returnBook = async (req, res) => {
     if (loan) {
       loan.returned = true;
       await loan.save();
-      const book = await Livro.findByPk(loan.bookId);
+      const book = await Livro.findByPk(loan.livroId);
       if (book) {
         book.available = true;
         await book.save();
