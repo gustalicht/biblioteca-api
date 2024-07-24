@@ -8,7 +8,7 @@ const auth = require('./middleware/auth');
 const loanRoutes = require('./routes/emprestimoRoutes');
 const jwt = require('jsonwebtoken');
 const setupSwagger = require('./swagger');
-const { User } = require('../models/users');
+const { User } = require('../models');
 
 const app = express();
 
